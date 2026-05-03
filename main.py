@@ -30,7 +30,7 @@ def main():
 
         print(data)
         # Загрузка в БД
-        #fill_db(data, file_name, conn)
+        fill_db(data, file_name, conn)
         print(f"✓ Успешно загружен: {file_name}")
 
     conn.close()

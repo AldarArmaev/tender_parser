@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import Direction, direction_scheme
+from src.config import Direction, direction_scheme
 
 
 def get_coordinates(file: pd.DataFrame, trigger_word: str) -> (int, int):
@@ -12,7 +12,9 @@ def get_coordinates(file: pd.DataFrame, trigger_word: str) -> (int, int):
     return (x, y)
 
 
-def remove_symbols(words: pd.Series) -> pd.Series:
+def remove_symbols(words):
+    if not isinstance(words, pd.Series):
+        return str(words).replace('\xa0', ' ').replace('\n', ' ').strip()
     return words.astype(str).str.replace('\xa0', ' ', regex=False).str.replace('\n', ' ', regex=False).str.strip()
 
 

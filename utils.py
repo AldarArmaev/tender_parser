@@ -41,6 +41,10 @@ def get_general_data(file: pd.DataFrame, direction_scheme: dict, scheme_word: st
 def get_supplier_rate(file: pd.DataFrame, direction_scheme: dict, suppliers: list, scheme_lot_rate: list) -> dict:
     scheme_lot, scheme_rate = scheme_lot_rate
     series_of_lots = get_general_data(file, direction_scheme, scheme_lot)
+
+    if series_of_lots is None or series_of_lots.empty:
+        return None
+
     series_of_lots = series_of_lots[pd.to_numeric(series_of_lots, errors='coerce').notna()]
 
     result = {lot: {} for lot in series_of_lots}

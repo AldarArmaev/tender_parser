@@ -14,7 +14,7 @@ def main():
         return
 
     # Обработка файлов
-    files = glob.glob("files/*.xlsx")
+    files = glob.glob("../files/*.xlsx")
     print(f"Найдено файлов: {len(files)}")
 
     for file_name in files:

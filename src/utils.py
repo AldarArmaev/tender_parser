@@ -16,15 +16,18 @@ def remove_symbols(words: pd.Series) -> pd.Series:
     return words.astype(str).str.replace('\xa0', ' ', regex=False).str.replace('\n', ' ', regex=False).str.strip()
 
 
-def get_general_data(file: pd.DataFrame, direction_scheme: dict, scheme_word: str) -> pd.Series:
+def get_data(file: pd.DataFrame, direction_scheme: dict, scheme_word: str) -> pd.Series:
     list_of_scheme = direction_scheme.get(scheme_word)
     if list_of_scheme == None:
         return None
+
     trigger_word, direction, expected_type = list_of_scheme
+
     coordinates = get_coordinates(file, trigger_word)
     if coordinates == None:
         return None
     x, y = coordinates
+
     if direction == Direction.horizontal:
         if expected_type == str:
             return remove_symbols(pd.Series([file.iloc[x, y+ 1:].dropna()][0]))
@@ -38,9 +41,9 @@ def get_general_data(file: pd.DataFrame, direction_scheme: dict, scheme_word: st
             return remove_symbols(file.iloc[x + 1:, y].dropna())
 
 
-def get_supplier_rate(file: pd.DataFrame, direction_scheme: dict, suppliers: list, scheme_lot_rate: list) -> dict:
-    scheme_lot, scheme_rate = scheme_lot_rate
-    series_of_lots = get_general_data(file, direction_scheme, scheme_lot)
+def get_supplier_rate(file: pd.DataFrame, direction_scheme: dict, suppliers: list, scheme_words_lot_rate: list) -> dict:
+    scheme_lot, scheme_rate = scheme_words_lot_rate
+    series_of_lots = get_data(file, direction_scheme, scheme_lot) #pd.Series([2, 4, 7], [1, 2, 3])
 
     if series_of_lots is None or series_of_lots.empty:
         return None
@@ -93,7 +96,7 @@ def get_supplier_rate(file: pd.DataFrame, direction_scheme: dict, suppliers: lis
 def get_names_of_lots(file: pd.DataFrame, direction_scheme: dict, scheme_lot_word) -> list[str, ...]:
     trigger_word = direction_scheme.get(scheme_lot_word)[0]
 
-    series_of_lots = get_general_data(file, direction_scheme, scheme_lot_word)
+    series_of_lots = get_data(file, direction_scheme, scheme_lot_word)
     coordinates = get_coordinates(file, trigger_word)
     if series_of_lots is None or coordinates is None:
         return None
@@ -113,7 +116,7 @@ def get_offers(file_sheet_0: pd.DataFrame, file_sheet_1: pd.DataFrame, direction
                list_of_words: list) -> dict:
     parsed_data = {}
     for word in list_of_words:
-        result = get_general_data(file_sheet_0, direction_scheme, word)
+        result = get_data(file_sheet_0, direction_scheme, word)
         if isinstance(result, pd.Series):
             parsed_data[word] = result.tolist()
         else:
